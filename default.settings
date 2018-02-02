@@ -1,0 +1,16 @@
+SECRET_KEY = ""
+SCOPES = [
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/calendar.readonly",
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+]
+TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token"
+REFRESH_URL = "https://www.googleapis.com/oauth2/v4/token"
+AUTH_BASE_URL = "https://accounts.google.com/o/oauth2/v2/auth"
+CLIENT_ID = ""
+CLIENT_SECRET = ""
+GOOGLEMAPS_KEY = ""
+GOOGLESHORT_KEY = ""
+OWM_KEY = ""
+VEHICLES = ["car", "bus", "male", "bicycle", "train"]

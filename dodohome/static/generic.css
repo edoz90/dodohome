@@ -1,0 +1,160 @@
+html {
+    height: 100%;
+}
+
+body{
+    background-color: #ccc;
+    display: grid;
+    grid-template-areas:
+    "header header"
+    "main main"
+    "footer footer";
+    height: 100%;
+    min-height: 100vh;
+    min-width: 100vw;
+}
+
+header {
+    grid-area: header;
+}
+
+h3 {
+    color: white;
+}
+
+label {
+    color: #111;
+}
+
+.brand-logo {
+    padding: 0 10px !important;
+}
+
+.material-icons {
+    vertical-align: middle;
+}
+
+div.horizontal div.card-stacked .card-action, nav .nav-wrapper {
+    background-color: #DB4437;
+}
+
+div.horizontal div.card-stacked a {
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+div.horizontal div.card-stacked i {
+    color: black;
+}
+
+#vehicles {
+    padding: 10px 50px;
+}
+
+#vehicles button {
+    margin: 5px 50px;
+    min-width: 80px;
+}
+
+.container {
+    justify-items: flex-start;
+    display: grid;
+    grid-area: main;
+    grid-column-gap: 0px;
+    grid-template-columns: 1fr 300px;
+    grid-template-areas:
+    "content sidebar";
+}
+
+.main {
+    background-color: white;
+    border-radius: 10px 0 0 10px;
+    grid-area: content;
+    padding: 10px;
+    min-height: 70vh;
+    width: 51vw;
+}
+
+.sidebar {
+    background-color: #DDD;
+    border-radius: 0 10px 10px 0; 
+    grid-area: sidebar;
+    min-height: 70vh;
+    width: 25vw;
+}
+
+.sidebar-content {
+    padding: 10px;
+}
+
+.fa-spinner {
+    left: 50%;
+    position: relative;
+    top: 25px;
+}
+
+.fab {
+    color: white;
+}
+
+blockquote {
+    font-weight: bold;
+}
+
+footer {
+    background-color: #DB4437;
+    grid-area: footer;
+    height: 100%;
+}
+
+@media (max-width: 660px) {
+    .container {
+        grid-template-areas:
+        "content content"
+        "sidebar sidebar";
+        grid-template-columns: 1fr auto;
+    }
+    .main, .sidebar {
+        border-radius: 5px;
+    }
+}
+
+#map {
+    height: 600px;
+    width: 760px;
+}
+
+#infowindow-content .title {
+    font-weight: bold;
+}
+
+#map #infowindow-content {
+    display: inline;
+}
+
+#pac-input {
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 20px;
+    font-weight: 300;
+    margin-top: 5px;
+    margin-left: 12px;
+    padding: 0px 11px 0 10px;
+    text-overflow: ellipsis;
+    width: 560px;
+}
+
+#pac-input:focus {
+    border-width: 2px;
+    border-color: #4d90fe;
+}
+
+.recap, .recap p {
+    padding: 10px;
+    font-size: 1.1em;
+}
+
+.nobackground {
+    background: none;
+}

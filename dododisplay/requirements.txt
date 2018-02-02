@@ -1,0 +1,4 @@
+Pillow
+wiringpi
+luma.oled
+simplejson

@@ -1,0 +1,8 @@
+flask
+flask-sessions
+google-auth
+googlemaps
+pyowm
+requests-oauthlib
+redis
+simplejson

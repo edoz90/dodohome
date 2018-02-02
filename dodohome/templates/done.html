@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+{{ super() }}
+{% if not ('oauth_token' in session) or not (locations is defined) or not (vehicles is defined): %}
+    <script>window.location.replace("/");</script>
+{% else %}
+    <section class="main col s12 m9 l7">
+        <div class="recap">
+            <p>User: <strong>{{ session.username.name }}</strong></p>
+            <p>Work location: <strong>{{ locations.work }}</strong></p>
+            <p>Home location: <strong>{{ locations.home }}</strong></p>
+            <p>Primary vehicle: <i class="fa fa-{{ vehicles.primary }}"/></i></p>
+            <p>Secondary vehicle: <i class="fa fa-{{ vehicles.secondary }}"></i></p>
+        </div>
+        <p>
+            <a id="confirm-data" href="#" class="btn waves-effect waves-red" >Confirm
+                <i class="material-icons right">send</i>
+            </a>
+            <a href="/restart" class="btn waves-effect waves-red">Cancel
+                <i class="material-icons right">send</i>
+            </a>
+        </p>
+    </section>
+    <script type=text/javascript>
+        $('#confirm-data').click(() => { alert("You can now close your browser."); return false; });
+    </script>
+{% endif %}
+{% endblock %}

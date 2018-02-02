@@ -1,0 +1,109 @@
+{% if not ('oauth_token' in session) or not (vehicles is defined):  %}
+    <script>window.location.replace("/");</script>
+{% else %}
+    <section class="main">
+    <form method="POST" action="setvehicle">
+        <h5><i class="fa fa-car fa-fw" aria-hidden="true"></i>Select a transport</h5>
+        <div id="vehicles">
+            <div id="vehicle1" class="row">
+            {% for v in vehicles: -%}
+                <div class="col s2">
+                    <button type="button" class="waves-effect waves-yellow btn" value="{{ v }}" name="vehicle1"><i class="fa fa-{{ v }}"></i></button>
+                </div>
+            {%- endfor %}
+            </div>
+        </div>
+        <button class="btn waves-effect waves-red" type="submit" name="action">Submit
+            <i class="material-icons right">send</i>
+        </button>
+    </form>
+    </section>
+    <aside class="sidebar">
+        <div class="sidebar-content">
+            <h5>Why?</h5>
+            <p>DodoHome let you choose yours transport to avoid traffic, bad weather, bad awakening and complicated bus or train timetables.</p>
+            <p>So, select your primary vehicle you want to go work with and a backup.
+        </div>
+    </aside>
+    <script type=text/javascript>
+    var clickC = 2;
+    $(() => {
+        $("#vehicle1 button").on('click', (e) => {
+            if (clickC <= 1) {
+                $('#vehicle1 button').prop('disabled', false);
+                $('#vehicle2').remove();
+                clickC = 2;
+                return false;
+            } else {
+                $('#vehicle1 button').prop('disabled', true);
+                e.currentTarget.disabled = false;
+            }
+            var additions = {
+                credentials: 'same-origin',
+                headers: new Headers({
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                }),
+                method: 'POST',
+                body: JSON.stringify({'vehicle': e.currentTarget.value, 'primary': "True"}),
+            };
+            fetch($SCRIPT_ROOT + '/getvehicles', additions)
+            .then(resp => {
+                resp.json().then(data => {
+                    clickC--;
+                    $('#vehicle2').length ? $('#vehicle2').empty(): $('#vehicles').append('<div id="vehicle2" class="row"></div>');
+                    $('#vehicle2').append('<h5>... and your fallback</h5>');
+                    Array.from(data.vehicles).forEach(evt => {
+                        var coldiv = $('<div/>', {
+                            class: 'col s2',
+                        });
+                        var b = $('<button/>', {
+                            class: 'waves-effect waves-yellow btn',
+                            type: 'button',
+                            value: evt,
+                            name: 'vehicle',
+                        });
+                        var i = $('<i/>', {
+                            class: 'fa fa-' + evt,
+                        });
+                        coldiv.append(b);
+                        b.click((e) => {
+                            if (clickC <= 0) {
+                                $('#vehicle2 button').prop('disabled', false);
+                                clickC = 1;
+                                return false;
+                            } else {
+                                $('#vehicle2 button').prop('disabled', true);
+                                e.currentTarget.disabled = false;
+                                clickC--;
+                            }
+                        });
+                        b.append(i);
+                        $('#vehicle2').append(coldiv); 
+                    });
+                }); 
+            }).catch(err => {
+                console.error(err);
+            });
+        });
+        $('form').submit((e) => {
+            var trans = $('#vehicles button:enabled');
+            if (trans.length == 2) { 
+                $('<input/>', {
+                    type: 'hidden',
+                    name: 'primary',
+                    value: trans[0].value,
+                }).appendTo('form');
+                $('<input/>', {
+                    type: 'hidden',
+                    name: 'secondary',
+                    value: trans[1].value,
+                }).appendTo('form');
+            } else {
+                e.preventDefault();
+            }
+        });
+        return false;
+   });
+   </script>
+{% endif %}

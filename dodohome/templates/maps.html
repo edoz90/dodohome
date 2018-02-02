@@ -1,0 +1,143 @@
+{% if not ('oauth_token' in session) or not (maps is defined):  %}
+    <script>window.location.replace("/");</script>
+{% else %}
+    <section class="main col s12 m9 l7">
+        <h5>Please select your <b>{{ title }}</b> address</h5>
+        <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+        <div id="map"></div>
+        <a href="?page=maps" class="btn waves-effect waves-red">Submit
+            <i class="material-icons right">send</i>
+        </a>
+    </section>
+    <aside class="sidebar col s12 m4 l5 hide" id="info">
+        <div class="sidebar-content">
+        </div>
+    </aside>
+    <script>
+        function initAutocomplete() {
+            var markers = [];
+            var directionsDisplay = new google.maps.DirectionsRenderer();
+            var directionsService = new google.maps.DirectionsService();
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: {{ maps['home']['lat'] }}, lng: {{ maps['home']['lng'] }} },
+                zoom: 15,
+                mapTypeId: 'hybrid'
+            });
+            directionsDisplay.setMap(map);
+            var p = document.createElement('p');
+
+            {% if maps['work']: %}
+                var marker = new google.maps.Marker({
+                    position: {lat: {{ maps['work']['lat']}}, lng: {{ maps['work']['lng']}} },
+                    title: "{{ marker }}",
+                });
+                marker.setMap(map);
+                $('.sidebar-content').append("<h5><i class=\"fa fa-briefcase\" aria-hidden=\"true\"></i> Your Work Location:</h5>");
+                p.append(document.createTextNode('{{ maps['work']['full'] }}'));
+                {% if maps['work']['lat'] and maps['work']['lng']: %}
+                    $('.sidebar').removeClass("hide");
+                {% endif %}
+                {% set urlset = "sethome" %}
+            {% else %}
+                {% set urlset = "setwork" %}
+                $('.sidebar-content').append("<h5><i class=\"fa fa-home\" aria-hidden=\"true\"></i> Your Home Location:</h5>");
+                p.append(document.createTextNode("{{ maps['home']['full'] }}"));
+                {% if maps['home']['lat'] and maps['home']['lng']: %}
+                    $('.sidebar').removeClass("hide");
+                {% endif %}
+            {% endif %}
+            $('.sidebar-content').append(p);
+
+            // Create the search box and link it to the UI element.
+            var input = document.getElementById('pac-input');
+            var searchBox = new google.maps.places.SearchBox(input);
+            map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+            // Bias the SearchBox results towards current map's viewport.
+            map.addListener('bounds_changed', () => {
+                searchBox.setBounds(map.getBounds());
+            });
+
+            // Listen for the event fired when the user selects a prediction and retrieve
+            // more details for that place.
+            searchBox.addListener('places_changed', () => {
+                var places = searchBox.getPlaces();
+                if (places.length == 0) {
+                    return;
+                }
+
+                // Clear out the old markers.
+                markers.forEach(function(marker) {
+                    marker.setMap(null);
+                });
+                markers = [];
+
+                // For each place, get the icon, name and location.
+                var bounds = new google.maps.LatLngBounds();
+                var additions = {
+                    credentials: 'same-origin',
+                    headers: new Headers({
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    }),
+                    method: 'POST',
+                    body: JSON.stringify({'location': places[0], 'location_full': document.getElementById('pac-input').value}),
+                };
+                fetch($SCRIPT_ROOT + '/{{ urlset }}', additions)
+                    .then(resp => {
+                        resp.json().then(data => {
+                            if (data['direction']) {
+                                directionsService.route(data['direction'], (result, status) => {
+                                    if (status == 'OK') {
+                                        // Reset all markers: maps will add 2 markers for start and end route
+                                        marker.setMap(null);
+                                        markers.forEach(function(marker) {
+                                            marker.setMap(null);
+                                        });
+                                        markers = [];
+                                        // Set up the route on the map
+                                        directionsDisplay.setDirections(result);
+                                    }
+                                })
+                            }
+                            console.log(data);
+                        })
+                }).catch(err => {
+                    console.error(err);
+                });
+                places.forEach(place => {
+                    if (!place.geometry) {
+                        console.log("Returned place contains no geometry");
+                        return;
+                    }
+                    var icon = {
+                        url: place.icon,
+                        size: new google.maps.Size(71, 71),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(17, 34),
+                        scaledSize: new google.maps.Size(25, 25)
+                    };
+
+                    // Create a marker for each place.
+                    markers.push(new google.maps.Marker({
+                        map: map,
+                        icon: icon,
+                        title: place.name,
+                        position: place.geometry.location
+                    }));
+
+                    if (place.geometry.viewport) {
+                        // Only geocodes have viewport.
+                        bounds.union(place.geometry.viewport);
+                    } else {
+                        bounds.extend(place.geometry.location);
+                    }
+                });
+                map.fitBounds(bounds);
+            });
+        }
+    </script>
+{% endif %}
+<script src="https://maps.googleapis.com/maps/api/js?key=&libraries=places&callback=initAutocomplete"
+    async defer></script>
+

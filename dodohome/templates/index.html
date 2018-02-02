@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block content %}
+{{ super() }}
+{% if not (session.oauth_token is defined) and not (nome is defined):  %}
+    <section class="main col s12 m9 l7 nobackground">
+        <div class="card horizontal grey lighten-3">
+            <div class="card-image">
+                <img src="static/images/clock-alarm.png">
+            </div>
+            <div class="card-stacked">
+                <div class="card-content lighten-2">
+                    <span class="card-title activator grey-text text-darken-4"><i class="material-icons right">more_vert</i></span>
+                    <span class="card-title">Welcome</span>
+                    <p>In order to continue please login with your Google Account.</p>
+                </div>
+                <a href="{{ url_for("oauth2callback") }}">
+                    <div class="card-action">
+                        <i class="fab fa-google fa-fw" aria-hidden="true"></i> Connect with Google
+                    </div>
+                </a>
+            </div>
+            <div class="card-reveal">
+                <span class="card-title grey-text text-darken-4">DodoHome<i class="material-icons right">close</i></span>
+                <p>Follow this steps to set-up your personal home assistant to schedule, remember, planning your work events</p>
+            </div>
+        </div>
+    </section>
+{% else %}
+    {# 
+        Start the setup
+    #}
+    {% if calendars is defined and calendars != None: %}
+        {% include 'latest.html' %}
+    {% elif vehicles is defined and vehicles != None: %}
+        {% include 'vehicle.html' %}
+    {% elif maps is defined and maps != None: %}
+        {% include 'maps.html' %}
+    {% endif %}
+{% endif %}
+{% endblock %}

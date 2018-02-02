@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <title>DodoHome | SetUp</title>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='normalize.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css" media="screen,projection">
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='fontawesome/css/font-awesome.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='generic.css') }}">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+    <body>
+        <div class="navbar-fixed scrollspy valign-wrapper" id="#home">
+            <nav>
+                <div class="nav-wrapper">
+                    <a href="#!" class="brand-logo">DodoHome Configuration</a>
+                    {% if session and session.username: %}
+                        <ul id="nav-mobile" class="right hide-on-med-and-down">
+                            <li>
+                                <div class="chip">
+                                    <img src="{{ session.username.picture }}" alt="Contact Person"/>
+                                    {{ session.username.name }}
+                                    <a id='logout' class="close red-text text-lighten-2" href="#">Logout</a>
+                                </div>
+                            </li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+        <div class="container">
+            <script type=text/javascript>
+                $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+                $(() => {
+                    $('#logout').on('click', (e) => {
+                        fetch($SCRIPT_ROOT + '/logout', {credentials: 'same-origin'})
+                            .then(r => {
+                                window.location.replace("/");
+                            }).catch(err => {
+                                console.error(err);
+                            });
+                    });
+                    if ($('aside').length === 0) {
+                       $('.main').css('border-radius', '10px'); 
+                    }
+                });
+            </script>
+            {% block content %}
+            {% endblock %}
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    </body>
+</html>
